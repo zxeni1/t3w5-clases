@@ -4,23 +4,34 @@ import PokemonCard from "./PokemonCard";
 // const pokemonList = ['pikachu', 'ditto', 'mew', 'charmander'];
 
 export default class PokemonFetcher extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
 
 
         this.state = {
-            pokemonList: []
+            pokemonList: [],
+            fightReady: 0
         }
     }
 
-    async componentDidMount(){
-        // Generate a random Pokemon ID number
-        let randomNumber = Math.ceil(Math.random() * 1025);
-        // Pass the random pokemon number to fetch
-        let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`)
-        let data = await response.json();
-        // set fetch response data to state
-        this.setState({pokemonList: [data]});
+    async componentDidMount() {
+        for (let index = 0; index < 6; index++) {
+            // Generate a random Pokemon ID Number
+            let randomNumber = Math.ceil(Math.random() * 1025);
+            // Pass random Pokemon Number to fetch
+            let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`);
+            let data = await response.json();
+            // set fetch response data to state
+            // Method 1
+            // this.setState({ pokemonList: [...this.state.pokemonList, data.name] });
+
+            // Method 2
+            this.setState((previousState) => {
+                return {
+                    pokemonList: [...previousState.pokemonList, data.name]
+                }
+            })
+        }
         console.log("PokemonFetcher first load on the page");
     }
 
@@ -30,15 +41,13 @@ export default class PokemonFetcher extends Component {
                 <h1>Pokemon Data</h1>
                 {
                     this.state.pokemonList.map(pokemon => {
-                        return <PokemonCard name={pokemon.name} />
+                        return <PokemonCard name={pokemon} />
                     })
                 }
                 <button onClick={() => {
-                    this.setState({pokemonList: []});
+                    this.setState({ pokemonList: [] });
                 }}>Empty the state</button>
             </div>
-
-
         )
     }
 }
